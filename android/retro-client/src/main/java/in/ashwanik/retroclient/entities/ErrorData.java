@@ -1,6 +1,9 @@
 package in.ashwanik.retroclient.entities;
 
 
+/**
+ * The type Error data.
+ */
 public class ErrorData {
 
     private ErrorType errorType;
@@ -13,6 +16,11 @@ public class ErrorData {
         setResponseStatus(builder.responseStatus);
     }
 
+    /**
+     * Gets error type.
+     *
+     * @return the error type
+     */
     public ErrorType getErrorType() {
         return errorType;
     }
@@ -21,6 +29,11 @@ public class ErrorData {
         this.errorType = errorType;
     }
 
+    /**
+     * Gets message.
+     *
+     * @return the message
+     */
     public String getMessage() {
         return message;
     }
@@ -29,6 +42,11 @@ public class ErrorData {
         this.message = message;
     }
 
+    /**
+     * Gets response status.
+     *
+     * @return the response status
+     */
     public int getResponseStatus() {
         return responseStatus;
     }
@@ -55,6 +73,9 @@ public class ErrorData {
         private String message;
         private int responseStatus;
 
+        /**
+         * Instantiates a new Builder.
+         */
         public Builder() {
         }
 

@@ -12,16 +12,43 @@ import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 
+/**
+ * The type Service generator.
+ */
 public class ServiceGenerator {
 
+    /**
+     * Create service s.
+     *
+     * @param <S>          the type parameter
+     * @param serviceClass the service class
+     * @return the s
+     */
     public static <S> S createService(Class<S> serviceClass) {
         return createService(serviceClass, null);
     }
 
+    /**
+     * Create service s.
+     *
+     * @param <S>          the type parameter
+     * @param serviceClass the service class
+     * @param headers      the headers
+     * @return the s
+     */
     public static <S> S createService(Class<S> serviceClass, final Map<String, String> headers) {
         return createService(serviceClass, headers, false);
     }
 
+    /**
+     * Create service s.
+     *
+     * @param <S>          the type parameter
+     * @param serviceClass the service class
+     * @param headers      the headers
+     * @param isDebug      the is debug
+     * @return the s
+     */
     public static <S> S createService(Class<S> serviceClass, final Map<String, String> headers, final boolean isDebug) {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         Retrofit.Builder builder;

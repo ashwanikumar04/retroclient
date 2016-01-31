@@ -10,10 +10,17 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
+/**
+ * Generic request call adapter.
+ */
 public class RequestCallAdapter<T> implements RequestCall<T> {
     private final Call<T> call;
 
+    /**
+     * Instantiates a new Request call adapter.
+     *
+     * @param call the call
+     */
     RequestCallAdapter(Call<T> call) {
         this.call = call;
     }

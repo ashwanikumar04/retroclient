@@ -4,11 +4,15 @@ import retrofit2.CallAdapter;
 import retrofit2.Converter;
 import retrofit2.GsonConverterFactory;
 
+
 /**
- * Created by AshwaniK on 1/31/2016.
+ * The type Retro client service initializer.
  */
 public class RetroClientServiceInitializer {
     private static RetroClientServiceInitializer instance = new RetroClientServiceInitializer();
+    /**
+     * The Base url.
+     */
     String baseUrl;
     private CallAdapter.Factory callAdapterFactory;
     private Converter.Factory converterFactory;
@@ -19,11 +23,21 @@ public class RetroClientServiceInitializer {
 
     }
 
+    /**
+     * Gets instance.
+     *
+     * @return the instance
+     */
     public static RetroClientServiceInitializer getInstance() {
         return instance;
     }
 
 
+    /**
+     * Gets time out.
+     *
+     * @return the time out
+     */
     public Integer getTimeOut() {
         if (timeOut == null) {
             timeOut = 30;
@@ -31,10 +45,20 @@ public class RetroClientServiceInitializer {
         return timeOut;
     }
 
+    /**
+     * Sets time out.
+     *
+     * @param timeOut the time out
+     */
     public void setTimeOut(Integer timeOut) {
         this.timeOut = timeOut;
     }
 
+    /**
+     * Gets enable retry.
+     *
+     * @return the enable retry
+     */
     public Boolean getEnableRetry() {
         if (enableRetry == null) {
             enableRetry = true;
@@ -42,10 +66,21 @@ public class RetroClientServiceInitializer {
         return enableRetry;
     }
 
+    /**
+     * Sets enable retry.
+     *
+     * @param enableRetry the enable retry
+     */
     public void setEnableRetry(Boolean enableRetry) {
         this.enableRetry = enableRetry;
     }
 
+    /**
+     * Gets base url.
+     *
+     * @return the base url
+     * @throws Exception the exception
+     */
     public String getBaseUrl() throws Exception {
         if (baseUrl == null || baseUrl.isEmpty()) {
             throw new Exception("Base url is not set. Please call initialize to set baseUrl");
@@ -53,11 +88,21 @@ public class RetroClientServiceInitializer {
         return baseUrl;
     }
 
+    /**
+     * Initialize.
+     *
+     * @param baseUrl the base url
+     */
     public void initialize(String baseUrl) {
         this.baseUrl = baseUrl;
 
     }
 
+    /**
+     * Gets call adapter factory.
+     *
+     * @return the call adapter factory
+     */
     public CallAdapter.Factory getCallAdapterFactory() {
         if (callAdapterFactory == null) {
             callAdapterFactory = new ErrorHandlingCallAdapterFactory();
@@ -65,10 +110,20 @@ public class RetroClientServiceInitializer {
         return callAdapterFactory;
     }
 
+    /**
+     * Sets call adapter factory.
+     *
+     * @param callAdapterFactory the call adapter factory
+     */
     public void setCallAdapterFactory(CallAdapter.Factory callAdapterFactory) {
         this.callAdapterFactory = callAdapterFactory;
     }
 
+    /**
+     * Gets converter factory.
+     *
+     * @return the converter factory
+     */
     public Converter.Factory getConverterFactory() {
         if (converterFactory == null) {
             converterFactory = GsonConverterFactory.create();
@@ -76,6 +131,11 @@ public class RetroClientServiceInitializer {
         return converterFactory;
     }
 
+    /**
+     * Sets converter factory.
+     *
+     * @param converterFactory the converter factory
+     */
     public void setConverterFactory(Converter.Factory converterFactory) {
         this.converterFactory = converterFactory;
     }

@@ -17,11 +17,17 @@ import in.ashwanik.retroclient.utils.Helpers;
 import retrofit2.Response;
 
 /**
- * Created by AshwaniK on 1/31/2016.
+ * The type Retro client service generator.
  */
 public class RetroClientServiceGenerator {
 
+    /**
+     * The Headers.
+     */
     Map<String, String> headers;
+    /**
+     * The Progress dialog.
+     */
     TransparentProgressDialog progressDialog;
     private boolean isBaseActivity;
     private ILogger logger;
@@ -31,11 +37,24 @@ public class RetroClientServiceGenerator {
     private String logCategory;
     private int progressViewColor;
 
+    /**
+     * Instantiates a new Retro client service generator.
+     *
+     * @param config   the config
+     * @param isSilent the is silent
+     */
     public RetroClientServiceGenerator(ServiceGeneratorConfig config, boolean isSilent) {
         this(config, isSilent, null);
 
     }
 
+    /**
+     * Instantiates a new Retro client service generator.
+     *
+     * @param config   the config
+     * @param isSilent the is silent
+     * @param headers  the headers
+     */
     public RetroClientServiceGenerator(ServiceGeneratorConfig config, boolean isSilent, Map<String, String> headers) {
         context = config.getCurrentActivity();
         this.headers = headers;
@@ -47,6 +66,15 @@ public class RetroClientServiceGenerator {
         isBaseActivity = true;
     }
 
+    /**
+     * Instantiates a new Retro client service generator.
+     *
+     * @param localContext     the local context
+     * @param localIsSilent    the local is silent
+     * @param iLogger          the logger
+     * @param localIsDebug     the local is debug
+     * @param localLogCategory the local log category
+     */
     public RetroClientServiceGenerator(Context localContext,
                                        boolean localIsSilent,
                                        ILogger iLogger,
@@ -55,6 +83,16 @@ public class RetroClientServiceGenerator {
         this(localContext, localIsSilent, iLogger, localIsDebug, localLogCategory, null);
     }
 
+    /**
+     * Instantiates a new Retro client service generator.
+     *
+     * @param localContext     the local context
+     * @param localIsSilent    the local is silent
+     * @param iLogger          the logger
+     * @param localIsDebug     the local is debug
+     * @param localLogCategory the local log category
+     * @param headers          the headers
+     */
     public RetroClientServiceGenerator(Context localContext,
                                        boolean localIsSilent,
                                        ILogger iLogger,
@@ -69,10 +107,24 @@ public class RetroClientServiceGenerator {
         logCategory = localLogCategory;
     }
 
+    /**
+     * Gets service.
+     *
+     * @param <T>          the type parameter
+     * @param serviceClass the service class
+     * @return the service
+     */
     public <T> T getService(Class<T> serviceClass) {
         return ServiceGenerator.createService(serviceClass, headers, isDebug);
     }
 
+    /**
+     * Execute.
+     *
+     * @param <T>      the type parameter
+     * @param call     the call
+     * @param callback the callback
+     */
     public <T> void execute(RequestCall<T> call, final RequestHandler<T> callback) {
         boolean isNetAvailable = Helpers.isOnline(context);
         if (isNetAvailable) {
@@ -106,6 +158,9 @@ public class RetroClientServiceGenerator {
         }
     }
 
+    /**
+     * Dismiss progress dialog.
+     */
     public void dismissProgressDialog() {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();

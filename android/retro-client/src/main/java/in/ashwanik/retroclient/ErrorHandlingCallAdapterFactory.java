@@ -14,7 +14,10 @@ import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 
-///From Retrofit samples
+
+/**
+ * The type Error handling call adapter factory.
+ */
 public class ErrorHandlingCallAdapterFactory implements CallAdapter.Factory {
     @Override
     public CallAdapter<RequestCall<?>> get(final Type returnType, Annotation[] annotations,
@@ -39,6 +42,13 @@ public class ErrorHandlingCallAdapterFactory implements CallAdapter.Factory {
         };
     }
 
+    /**
+     * Gets parameter upper bound.
+     *
+     * @param index the index
+     * @param type  the type
+     * @return the parameter upper bound
+     */
     Type getParameterUpperBound(int index, ParameterizedType type) {
         Type[] types = type.getActualTypeArguments();
         if (types.length <= index) {
@@ -52,7 +62,13 @@ public class ErrorHandlingCallAdapterFactory implements CallAdapter.Factory {
         return paramType;
     }
 
-    ///This is currently copied from Retrofit Library. It should be fixed in future releases of Retrofit
+    /**
+     * Gets raw type.
+     *
+     * @param type the type
+     * @return the raw type
+     */
+///This is currently copied from Retrofit Library. It should be fixed in future releases of Retrofit
     Class<?> getRawType(Type type) {
         if (type instanceof Class<?>) {
             // Type is a normal class.

@@ -1,11 +1,22 @@
 package in.ashwanik.retroclient.interfaces;
 
+
 /**
- * Created by AshwaniK on 1/30/2016.
+ * The interface Request call.
+ *
+ * @param <T> the type parameter
  */
 public interface RequestCall<T> {
+    /**
+     * Cancel.
+     */
     void cancel();
 
+    /**
+     * Enqueue.
+     *
+     * @param callback the callback
+     */
     void enqueue(RequestCallback<T> callback);
 
     RequestCall<T> clone();
