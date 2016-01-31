@@ -1,1 +1,1 @@
-include ':app', ':retroclientlib'
+include ':app', ':retro-client'
