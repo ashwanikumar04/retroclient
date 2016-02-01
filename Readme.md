@@ -97,4 +97,4 @@ RetroClientServiceGenerator serviceGenerator = new RetroClientServiceGenerator(M
 
 
 
-For more tutorials on Android, please check **[here]**(http://blog.ashwanik.in).
+For more tutorials on Android, please check [here](http://blog.ashwanik.in).
