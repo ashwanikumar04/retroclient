@@ -44,14 +44,29 @@ public class RetroClientServiceInitializer {
         return instance;
     }
 
+    /**
+     * Gets cache directory.
+     *
+     * @return the cache directory
+     */
     public String getCacheDirectory() {
         return cacheDirectory;
     }
 
+    /**
+     * Sets cache directory.
+     *
+     * @param cacheDirectory the cache directory
+     */
     public void setCacheDirectory(String cacheDirectory) {
         this.cacheDirectory = cacheDirectory;
     }
 
+    /**
+     * Gets log category name.
+     *
+     * @return the log category name
+     */
     public String getLogCategoryName() {
         if (logCategoryName == null || logCategoryName.isEmpty()) {
             logCategoryName = "Retro-Client";
@@ -59,18 +74,38 @@ public class RetroClientServiceInitializer {
         return logCategoryName;
     }
 
+    /**
+     * Sets log category name.
+     *
+     * @param logCategoryName the log category name
+     */
     public void setLogCategoryName(String logCategoryName) {
         this.logCategoryName = logCategoryName;
     }
 
+    /**
+     * Gets progress view color.
+     *
+     * @return the progress view color
+     */
     public int getProgressViewColor() {
         return progressViewColor;
     }
 
+    /**
+     * Sets progress view color.
+     *
+     * @param progressViewColor the progress view color
+     */
     public void setProgressViewColor(int progressViewColor) {
         this.progressViewColor = progressViewColor;
     }
 
+    /**
+     * Gets logger.
+     *
+     * @return the logger
+     */
     public ILogger getLogger() {
         if (logger == null) {
             return new ILogger() {
@@ -90,10 +125,20 @@ public class RetroClientServiceInitializer {
         return logger;
     }
 
+    /**
+     * Sets logger.
+     *
+     * @param logger the logger
+     */
     public void setLogger(ILogger logger) {
         this.logger = logger;
     }
 
+    /**
+     * Is debug boolean.
+     *
+     * @return the boolean
+     */
     public Boolean isDebug() {
         if (isDebug == null) {
             isDebug = false;
@@ -101,6 +146,11 @@ public class RetroClientServiceInitializer {
         return isDebug;
     }
 
+    /**
+     * Sets debug.
+     *
+     * @param isDebug the is debug
+     */
     public void setDebug(Boolean isDebug) {
         this.isDebug = isDebug;
     }
@@ -163,7 +213,10 @@ public class RetroClientServiceInitializer {
     /**
      * Initialize.
      *
-     * @param baseUrl the base url
+     * @param baseUrl           the base url
+     * @param context           the context
+     * @param progressViewColor the progress view color
+     * @param isDebug           the is debug
      */
     public void initialize(String baseUrl, Context context, int progressViewColor, boolean isDebug) {
         this.baseUrl = baseUrl;

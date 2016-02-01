@@ -9,6 +9,9 @@ import android.widget.RelativeLayout;
 
 import in.ashwanik.retroclient.R;
 
+/**
+ * The type Transparent progress dialog.
+ */
 public class TransparentProgressDialog extends Dialog {
 
     private CircularProgressDrawable mDrawable;
@@ -17,6 +20,7 @@ public class TransparentProgressDialog extends Dialog {
      * Instantiates a new transparent progress dialog.
      *
      * @param context the context
+     * @param color   the color
      */
     public TransparentProgressDialog(Context context, int color) {
         super(context, R.style.TransparentProgressDialog);
