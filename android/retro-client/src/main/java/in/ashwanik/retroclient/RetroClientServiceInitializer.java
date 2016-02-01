@@ -22,7 +22,6 @@ public class RetroClientServiceInitializer {
      * The Base url.
      */
     String baseUrl;
-    private CallAdapter.Factory callAdapterFactory;
     private Converter.Factory converterFactory;
     private Integer timeOut;
     private Boolean enableRetry;
@@ -166,31 +165,13 @@ public class RetroClientServiceInitializer {
      *
      * @param baseUrl the base url
      */
-    public void initialize(String baseUrl, Context context) {
+    public void initialize(String baseUrl, Context context, int progressViewColor, boolean isDebug) {
         this.baseUrl = baseUrl;
+        this.setDebug(isDebug);
         RetroHttpClient.getInstance().initialize(context);
+        this.progressViewColor = progressViewColor;
     }
 
-    /**
-     * Gets call adapter factory.
-     *
-     * @return the call adapter factory
-     */
-    public CallAdapter.Factory getCallAdapterFactory() {
-        if (callAdapterFactory == null) {
-            callAdapterFactory = new ErrorHandlingCallAdapterFactory();
-        }
-        return callAdapterFactory;
-    }
-
-    /**
-     * Sets call adapter factory.
-     *
-     * @param callAdapterFactory the call adapter factory
-     */
-    public void setCallAdapterFactory(CallAdapter.Factory callAdapterFactory) {
-        this.callAdapterFactory = callAdapterFactory;
-    }
 
     /**
      * Gets converter factory.

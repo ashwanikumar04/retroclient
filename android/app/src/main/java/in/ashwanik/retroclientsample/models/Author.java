@@ -3,21 +3,21 @@ package in.ashwanik.retroclientsample.models;
 /**
  * Created by AshwaniK on 1/30/2016.
  */
-public class Book {
+public class Author {
     public int id;
     public String name;
 
-    public Book() {
+    public Author() {
 
     }
 
-    public Book(String name) {
+    public Author(String name) {
         this.name = name;
     }
 
     @Override
     public String toString() {
-        return "Book{" +
+        return "Author{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';

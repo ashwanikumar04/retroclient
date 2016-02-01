@@ -14,12 +14,34 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 var apiRoutes = express.Router();
 
 var currentId = 1;
+apiRoutes.get('/books/:id', function (req, res) {
+    var book = {
+        id: req.params.id,
+        name: "test"
+    };
+    res.json(book);
+});
+
+apiRoutes.get('/authors/:id', function (req, res) {
+    if (!req.headers['x-access-token']) {
+        res.status(401);
+        res.json({
+            message: "Not authorized"
+        });
+    }
+    else {
+        res.json({
+            name: "Author 1"
+        });
+    }
+});
 
 apiRoutes.get('/books', function (req, res) {
     var books = [];
     for (var index = 0; index < 1000; index++) {
         books.push({ id: index + 1, name: "Books " + index + 1 });
     }
+    res.setHeader('Cache-Control', "private, max-age=" + 10000);
     res.json(books);
 });
 
@@ -43,7 +65,7 @@ apiRoutes.put('/books/:id', function (req, res) {
 
 apiRoutes.delete('/books/:id', function (req, res) {
     res.status(204);
-    res.json({ "message": "deleted" });
+    res.json({ id: 1, name: "Books " + 2 });
 });
 
 

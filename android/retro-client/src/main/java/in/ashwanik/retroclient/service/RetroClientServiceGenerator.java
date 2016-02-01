@@ -6,15 +6,14 @@ import android.content.Context;
 import java.util.Map;
 
 import in.ashwanik.retroclient.RetroClientServiceInitializer;
-import in.ashwanik.retroclient.clients.BaseRetroClient;
 import in.ashwanik.retroclient.entities.ErrorData;
 import in.ashwanik.retroclient.entities.ErrorType;
 import in.ashwanik.retroclient.interfaces.ILogger;
-import in.ashwanik.retroclient.interfaces.RequestCall;
-import in.ashwanik.retroclient.interfaces.RequestCallback;
 import in.ashwanik.retroclient.interfaces.RequestHandler;
 import in.ashwanik.retroclient.ui.TransparentProgressDialog;
 import in.ashwanik.retroclient.utils.Helpers;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -101,14 +100,34 @@ public class RetroClientServiceGenerator {
      * @param serviceClass the service class
      * @return the service
      */
-    public <T extends BaseRetroClient> T getService(Class<T> serviceClass) {
+    public <T> T getService(Class<T> serviceClass) {
         return ServiceGenerator.createService(serviceClass, headers);
     }
 
-    private void log(String message) {
+    /**
+     * Gets service.
+     *
+     * @param <T>          the type parameter
+     * @param serviceClass the service class
+     * @param serviceName  the service name
+     * @return the service
+     */
+    public <T> T getService(Class<T> serviceClass, String serviceName) {
+        return ServiceGenerator.createService(serviceClass, headers, serviceName);
+    }
+
+    private void logOnLogCat(String message) {
         if (RetroClientServiceInitializer.getInstance().isDebug()) {
-            RetroClientServiceInitializer.getInstance().getLogger().log(message);
+            Helpers.d(RetroClientServiceInitializer.getInstance().getLogCategoryName(), message);
         }
+    }
+
+    private void log(String message) {
+        RetroClientServiceInitializer.getInstance().getLogger().log(message);
+    }
+
+    private void log(Exception exception) {
+        RetroClientServiceInitializer.getInstance().getLogger().log(exception);
     }
 
     /**
@@ -118,7 +137,7 @@ public class RetroClientServiceGenerator {
      * @param call     the call
      * @param callback the callback
      */
-    public <T> void execute(RequestCall<T> call, final RequestHandler<T> callback) {
+    public <T> void execute(Call<T> call, final RequestHandler<T> callback) {
         boolean isNetAvailable = Helpers.isOnline(context);
         if (isNetAvailable) {
             if (!isSilent) {
@@ -127,27 +146,49 @@ public class RetroClientServiceGenerator {
                 dismissProgressDialog();
                 progressDialog.show();
             }
-            call.enqueue(new RequestCallback<T>() {
+            call.enqueue(new Callback<T>() {
                 @Override
-                public void onSuccess(Response<T> response) {
+                public void onResponse(Response<T> response) {
                     if (isBaseActivity && ((Activity) context).isFinishing()) {
                         return;
                     }
-                    dismissProgressDialog();
-                    callback.onSuccess(response.body());
+                    try {
+                        dismissProgressDialog();
+                        if (response != null) {
+                            int code = response.code();
+                            if (response.isSuccess() && code >= 200 && code < 300) {
+                                callback.onSuccess(response.body());
+                            } else {
+                                if (response.errorBody() != null) {
+                                    callback.onError(new ErrorData.Builder().responseStatus(code).errorType(ErrorType.Specific).message("Some error occurred").errorBody(response.errorBody().string()).build());
+                                } else {
+                                    callback.onError(new ErrorData.Builder().responseStatus(code).errorType(ErrorType.Generic).message("Some error occurred").build());
+                                }
+                            }
+                        } else {
+                            callback.onError(new ErrorData.Builder().responseStatus(0).errorType(ErrorType.Generic).message("Some error occurred").build());
+                        }
+
+                    } catch (Exception exception) {
+                        log(exception);
+                        callback.onError(new ErrorData.Builder().responseStatus(0).errorType(ErrorType.Generic).message("Some error occurred").build());
+                    }
                 }
 
                 @Override
-                public void onError(ErrorData errorData) {
+                public void onFailure(Throwable t) {
                     if (isBaseActivity && ((Activity) context).isFinishing()) {
                         return;
                     }
-                    dismissProgressDialog();
-                    callback.onError(errorData);
+                    try {
+                        dismissProgressDialog();
+                    } finally {
+                        callback.onError(new ErrorData.Builder().responseStatus(0).errorType(ErrorType.Generic).message("Some error occurred").build());
+                    }
                 }
             });
         } else {
-            log("Network not available");
+            logOnLogCat("Network not available");
             callback.onError(new ErrorData.Builder().responseStatus(0).errorType(isSilent ? ErrorType.DoNotHandle : ErrorType.Specific).message("Please check network connection!!!").build());
         }
     }

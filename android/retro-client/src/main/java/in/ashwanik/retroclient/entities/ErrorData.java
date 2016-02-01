@@ -1,6 +1,8 @@
 package in.ashwanik.retroclient.entities;
 
 
+import in.ashwanik.retroclient.utils.Json;
+
 /**
  * The type Error data.
  */
@@ -9,11 +11,28 @@ public class ErrorData {
     private ErrorType errorType;
     private String message;
     private int responseStatus;
+    private String errorBody;
 
     private ErrorData(Builder builder) {
         setErrorType(builder.errorType);
         setMessage(builder.message);
         setResponseStatus(builder.responseStatus);
+        errorBody = builder.errorBody;
+    }
+
+    /**
+     * Gets error.
+     *
+     * @param <T>    type of the error object
+     * @param tClass the t class
+     * @return the typed object
+     * @throws ClassNotFoundException the class not found exception
+     */
+    public <T> T getError(Class<T> tClass) throws ClassNotFoundException {
+        if (errorBody == null || errorBody.isEmpty()) {
+            return null;
+        }
+        return Json.deSerialize(errorBody, tClass);
     }
 
     /**
@@ -72,6 +91,7 @@ public class ErrorData {
         private ErrorType errorType;
         private String message;
         private int responseStatus;
+        private String errorBody;
 
         /**
          * Instantiates a new Builder.
@@ -109,6 +129,17 @@ public class ErrorData {
          */
         public Builder responseStatus(int val) {
             responseStatus = val;
+            return this;
+        }
+
+        /**
+         * Sets the {@code errorBody} and returns a reference to this Builder so that the methods can be chained together.
+         *
+         * @param val the {@code errorBody} to set
+         * @return a reference to this Builder
+         */
+        public Builder errorBody(String val) {
+            errorBody = val;
             return this;
         }
 
