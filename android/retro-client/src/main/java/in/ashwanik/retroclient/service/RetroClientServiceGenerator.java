@@ -5,13 +5,14 @@ import android.content.Context;
 
 import java.util.Map;
 
+import in.ashwanik.retroclient.RetroClientServiceInitializer;
+import in.ashwanik.retroclient.clients.BaseRetroClient;
 import in.ashwanik.retroclient.entities.ErrorData;
 import in.ashwanik.retroclient.entities.ErrorType;
 import in.ashwanik.retroclient.interfaces.ILogger;
 import in.ashwanik.retroclient.interfaces.RequestCall;
 import in.ashwanik.retroclient.interfaces.RequestCallback;
 import in.ashwanik.retroclient.interfaces.RequestHandler;
-import in.ashwanik.retroclient.interfaces.ServiceGeneratorConfig;
 import in.ashwanik.retroclient.ui.TransparentProgressDialog;
 import in.ashwanik.retroclient.utils.Helpers;
 import retrofit2.Response;
@@ -33,18 +34,17 @@ public class RetroClientServiceGenerator {
     private ILogger logger;
     private boolean isSilent;
     private Context context;
-    private boolean isDebug;
     private String logCategory;
     private int progressViewColor;
 
     /**
      * Instantiates a new Retro client service generator.
      *
-     * @param config   the config
+     * @param activity the activity
      * @param isSilent the is silent
      */
-    public RetroClientServiceGenerator(ServiceGeneratorConfig config, boolean isSilent) {
-        this(config, isSilent, null);
+    public RetroClientServiceGenerator(Activity activity, boolean isSilent) {
+        this(activity, isSilent, null);
 
     }
 
@@ -55,56 +55,43 @@ public class RetroClientServiceGenerator {
      * @param isSilent the is silent
      * @param headers  the headers
      */
-    public RetroClientServiceGenerator(ServiceGeneratorConfig config, boolean isSilent, Map<String, String> headers) {
-        context = config.getCurrentActivity();
+    public RetroClientServiceGenerator(Activity config, boolean isSilent, Map<String, String> headers) {
+        context = config;
         this.headers = headers;
         this.isSilent = isSilent;
-        this.progressViewColor = config.getProgressViewColor();
-        logger = config.getLogger();
-        isDebug = config.isDebug();
-        logCategory = config.getLogCategory();
+        this.progressViewColor = RetroClientServiceInitializer.getInstance().getProgressViewColor();
+        logger = RetroClientServiceInitializer.getInstance().getLogger();
+        logCategory = RetroClientServiceInitializer.getInstance().getLogCategoryName();
         isBaseActivity = true;
     }
 
     /**
      * Instantiates a new Retro client service generator.
      *
-     * @param localContext     the local context
-     * @param localIsSilent    the local is silent
-     * @param iLogger          the logger
-     * @param localIsDebug     the local is debug
-     * @param localLogCategory the local log category
+     * @param localContext  the local context
+     * @param localIsSilent the local is silent
      */
     public RetroClientServiceGenerator(Context localContext,
-                                       boolean localIsSilent,
-                                       ILogger iLogger,
-                                       boolean localIsDebug,
-                                       String localLogCategory) {
-        this(localContext, localIsSilent, iLogger, localIsDebug, localLogCategory, null);
+                                       boolean localIsSilent) {
+        this(localContext, localIsSilent, null);
     }
 
     /**
      * Instantiates a new Retro client service generator.
      *
-     * @param localContext     the local context
-     * @param localIsSilent    the local is silent
-     * @param iLogger          the logger
-     * @param localIsDebug     the local is debug
-     * @param localLogCategory the local log category
-     * @param headers          the headers
+     * @param localContext  the local context
+     * @param localIsSilent the local is silent
+     * @param headers       the headers
      */
     public RetroClientServiceGenerator(Context localContext,
                                        boolean localIsSilent,
-                                       ILogger iLogger,
-                                       boolean localIsDebug,
-                                       String localLogCategory, Map<String, String> headers) {
+                                       Map<String, String> headers) {
         context = localContext;
         this.headers = headers;
         isSilent = localIsSilent;
-        logger = iLogger;
-        isDebug = localIsDebug;
+        logger = RetroClientServiceInitializer.getInstance().getLogger();
+        logCategory = RetroClientServiceInitializer.getInstance().getLogCategoryName();
         isBaseActivity = false;
-        logCategory = localLogCategory;
     }
 
     /**
@@ -114,8 +101,14 @@ public class RetroClientServiceGenerator {
      * @param serviceClass the service class
      * @return the service
      */
-    public <T> T getService(Class<T> serviceClass) {
-        return ServiceGenerator.createService(serviceClass, headers, isDebug);
+    public <T extends BaseRetroClient> T getService(Class<T> serviceClass) {
+        return ServiceGenerator.createService(serviceClass, headers);
+    }
+
+    private void log(String message) {
+        if (RetroClientServiceInitializer.getInstance().isDebug()) {
+            RetroClientServiceInitializer.getInstance().getLogger().log(message);
+        }
     }
 
     /**
@@ -154,6 +147,7 @@ public class RetroClientServiceGenerator {
                 }
             });
         } else {
+            log("Network not available");
             callback.onError(new ErrorData.Builder().responseStatus(0).errorType(isSilent ? ErrorType.DoNotHandle : ErrorType.Specific).message("Please check network connection!!!").build());
         }
     }

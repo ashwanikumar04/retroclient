@@ -12,7 +12,6 @@ import java.util.List;
 
 import in.ashwanik.retroclient.entities.ErrorData;
 import in.ashwanik.retroclient.interfaces.RequestHandler;
-import in.ashwanik.retroclient.interfaces.ServiceGeneratorConfig;
 import in.ashwanik.retroclient.service.RetroClientServiceGenerator;
 import in.ashwanik.retroclientsample.models.Book;
 import in.ashwanik.retroclientsample.web.clients.BookClient;

@@ -14,11 +14,10 @@ import android.view.View;
 
 import in.ashwanik.retroclient.RetroClientServiceInitializer;
 import in.ashwanik.retroclient.interfaces.ILogger;
-import in.ashwanik.retroclient.interfaces.ServiceGeneratorConfig;
 import in.ashwanik.retroclientsample.web.ApiUrls;
 
 
-public class MainActivity extends AppCompatActivity implements ServiceGeneratorConfig {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,20 +81,6 @@ public class MainActivity extends AppCompatActivity implements ServiceGeneratorC
 
             }
         };
-    }
-
-    @Override
-    public Activity getCurrentActivity() {
-        return this;
-    }
-
-    @Override
-    public int getProgressViewColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return getResources().getColor(R.color.colorPrimary, null);
-        } else {
-            return getResources().getColor(R.color.colorPrimary);
-        }
     }
 
 

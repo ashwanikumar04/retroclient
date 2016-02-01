@@ -1,5 +1,11 @@
 package in.ashwanik.retroclient;
 
+import android.util.Log;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import in.ashwanik.retroclient.interfaces.ILogger;
 import retrofit2.CallAdapter;
 import retrofit2.Converter;
 import retrofit2.GsonConverterFactory;
@@ -18,6 +24,10 @@ public class RetroClientServiceInitializer {
     private Converter.Factory converterFactory;
     private Integer timeOut;
     private Boolean enableRetry;
+    private Boolean isDebug;
+    private String logCategoryName;
+    private int progressViewColor;
+    private ILogger logger;
 
     private RetroClientServiceInitializer() {
 
@@ -32,6 +42,58 @@ public class RetroClientServiceInitializer {
         return instance;
     }
 
+    public String getLogCategoryName() {
+        if (logCategoryName == null || logCategoryName.isEmpty()) {
+            logCategoryName = "Retro-Client";
+        }
+        return logCategoryName;
+    }
+
+    public void setLogCategoryName(String logCategoryName) {
+        this.logCategoryName = logCategoryName;
+    }
+
+    public int getProgressViewColor() {
+        return progressViewColor;
+    }
+
+    public void setProgressViewColor(int progressViewColor) {
+        this.progressViewColor = progressViewColor;
+    }
+
+    public ILogger getLogger() {
+        if (logger == null) {
+            return new ILogger() {
+                @Override
+                public void log(String message) {
+                    Log.d(getLogCategoryName(), message);
+                }
+
+                @Override
+                public void log(Exception exception) {
+                    StringWriter errors = new StringWriter();
+                    exception.printStackTrace(new PrintWriter(errors));
+                    Log.e(getLogCategoryName(), errors.toString());
+                }
+            };
+        }
+        return logger;
+    }
+
+    public void setLogger(ILogger logger) {
+        this.logger = logger;
+    }
+
+    public Boolean isDebug() {
+        if (isDebug == null) {
+            isDebug = false;
+        }
+        return isDebug;
+    }
+
+    public void setDebug(Boolean isDebug) {
+        this.isDebug = isDebug;
+    }
 
     /**
      * Gets time out.

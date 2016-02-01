@@ -1,10 +1,13 @@
 package in.ashwanik.retroclient.service;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import in.ashwanik.retroclient.RetroClientServiceInitializer;
+import in.ashwanik.retroclient.clients.BaseRetroClient;
+import in.ashwanik.retroclient.clients.RetroHttpClient;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -17,6 +20,8 @@ import retrofit2.Retrofit;
  */
 public class ServiceGenerator {
 
+    private static Map<String, BaseRetroClient> clients = new HashMap<>();
+
     /**
      * Create service s.
      *
@@ -24,7 +29,7 @@ public class ServiceGenerator {
      * @param serviceClass the service class
      * @return the s
      */
-    public static <S> S createService(Class<S> serviceClass) {
+    public static <S extends BaseRetroClient> S createService(Class<S> serviceClass) {
         return createService(serviceClass, null);
     }
 
@@ -36,21 +41,11 @@ public class ServiceGenerator {
      * @param headers      the headers
      * @return the s
      */
-    public static <S> S createService(Class<S> serviceClass, final Map<String, String> headers) {
-        return createService(serviceClass, headers, false);
-    }
+    public static <S extends BaseRetroClient> S createService(Class<S> serviceClass, final Map<String, String> headers) {
+        if (clients.containsKey(serviceClass.getName())) {
+            return serviceClass.cast(clients.get(serviceClass.getName()));
+        }
 
-    /**
-     * Create service s.
-     *
-     * @param <S>          the type parameter
-     * @param serviceClass the service class
-     * @param headers      the headers
-     * @param isDebug      the is debug
-     * @return the s
-     */
-    public static <S> S createService(Class<S> serviceClass, final Map<String, String> headers, final boolean isDebug) {
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         Retrofit.Builder builder;
         try {
             builder = new Retrofit.Builder()
@@ -61,13 +56,10 @@ public class ServiceGenerator {
             e.printStackTrace();
             return null;
         }
-        if (isDebug) {
-            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-            httpClient.addInterceptor(logging);
-        }
+        OkHttpClient httpClient = RetroHttpClient.getInstance().getOkHttpClient().newBuilder()
+                .build();
         if (headers != null && !headers.isEmpty()) {
-            httpClient.addInterceptor(new Interceptor() {
+            httpClient.interceptors().add(new Interceptor() {
                 @Override
                 public Response intercept(Interceptor.Chain chain) throws IOException {
                     Request original = chain.request();
@@ -82,14 +74,11 @@ public class ServiceGenerator {
                 }
             });
         }
-        int timeOut = RetroClientServiceInitializer.getInstance().getTimeOut();
-        httpClient.connectTimeout(timeOut, TimeUnit.SECONDS);
-        httpClient.readTimeout(timeOut, TimeUnit.SECONDS);
-        httpClient.writeTimeout(timeOut, TimeUnit.SECONDS);
-        httpClient.retryOnConnectionFailure(RetroClientServiceInitializer.getInstance().getEnableRetry());
-        OkHttpClient client = httpClient.build();
-        Retrofit retrofit = builder.client(client).build();
-        return retrofit.create(serviceClass);
+
+        Retrofit retrofit = builder.client(httpClient).build();
+        S service = retrofit.create(serviceClass);
+        clients.put(serviceClass.getName(), service);
+        return service;
     }
 }
 
