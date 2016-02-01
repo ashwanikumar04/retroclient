@@ -8,13 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import java.util.List;
-
 import in.ashwanik.retroclient.entities.ErrorData;
 import in.ashwanik.retroclient.interfaces.RequestHandler;
 import in.ashwanik.retroclient.service.RetroClientServiceGenerator;
 import in.ashwanik.retroclientsample.models.Book;
 import in.ashwanik.retroclientsample.web.clients.BookClient;
+
+import java.util.List;
 
 
 /**
@@ -38,11 +38,11 @@ public class MainActivityFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RetroClientServiceGenerator serviceGenerator = new RetroClientServiceGenerator((ServiceGeneratorConfig) MainActivityFragment.this.getActivity(), false);
+                RetroClientServiceGenerator serviceGenerator = new RetroClientServiceGenerator(MainActivityFragment.this.getActivity(), false);
 
                 BookClient client = serviceGenerator.getService(BookClient.class);
 
-                serviceGenerator.execute(client.books(), new RequestHandler<List<Book>>() {
+                serviceGenerator.execute(client.get(), new RequestHandler<List<Book>>() {
                     @Override
                     public void onSuccess(List<Book> response) {
                         for (Book book : response) {

@@ -1,10 +1,12 @@
 package in.ashwanik.retroclient;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import in.ashwanik.retroclient.clients.RetroHttpClient;
 import in.ashwanik.retroclient.interfaces.ILogger;
 import retrofit2.CallAdapter;
 import retrofit2.Converter;
@@ -28,6 +30,7 @@ public class RetroClientServiceInitializer {
     private String logCategoryName;
     private int progressViewColor;
     private ILogger logger;
+    private String cacheDirectory;
 
     private RetroClientServiceInitializer() {
 
@@ -40,6 +43,14 @@ public class RetroClientServiceInitializer {
      */
     public static RetroClientServiceInitializer getInstance() {
         return instance;
+    }
+
+    public String getCacheDirectory() {
+        return cacheDirectory;
+    }
+
+    public void setCacheDirectory(String cacheDirectory) {
+        this.cacheDirectory = cacheDirectory;
     }
 
     public String getLogCategoryName() {
@@ -155,9 +166,9 @@ public class RetroClientServiceInitializer {
      *
      * @param baseUrl the base url
      */
-    public void initialize(String baseUrl) {
+    public void initialize(String baseUrl, Context context) {
         this.baseUrl = baseUrl;
-
+        RetroHttpClient.getInstance().initialize(context);
     }
 
     /**
