@@ -17,18 +17,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
- * The type Retro client service generator.
+ * This class generates clients for making network calls
  */
 public class RetroClientServiceGenerator {
-
-    /**
-     * The Headers.
-     */
-    Map<String, String> headers;
-    /**
-     * The Progress dialog.
-     */
-    TransparentProgressDialog progressDialog;
+    private Map<String, String> headers;
+    private TransparentProgressDialog progressDialog;
     private boolean isBaseActivity;
     private ILogger logger;
     private boolean isSilent;
@@ -40,7 +33,7 @@ public class RetroClientServiceGenerator {
      * Instantiates a new Retro client service generator.
      *
      * @param activity the activity
-     * @param isSilent the is silent
+     * @param isSilent Flag to make a network call without progress view
      */
     public RetroClientServiceGenerator(Activity activity, boolean isSilent) {
         this(activity, isSilent, null);
@@ -50,9 +43,9 @@ public class RetroClientServiceGenerator {
     /**
      * Instantiates a new Retro client service generator.
      *
-     * @param config   the config
-     * @param isSilent the is silent
-     * @param headers  the headers
+     * @param config   config
+     * @param isSilent Flag to make a network call without progress view
+     * @param headers  map of headers
      */
     public RetroClientServiceGenerator(Activity config, boolean isSilent, Map<String, String> headers) {
         context = config;
@@ -67,27 +60,27 @@ public class RetroClientServiceGenerator {
     /**
      * Instantiates a new Retro client service generator.
      *
-     * @param localContext  the local context
-     * @param localIsSilent the local is silent
+     * @param context  context
+     * @param isSilent Flag to make a network call without progress view
      */
-    public RetroClientServiceGenerator(Context localContext,
-                                       boolean localIsSilent) {
-        this(localContext, localIsSilent, null);
+    public RetroClientServiceGenerator(Context context,
+                                       boolean isSilent) {
+        this(context, isSilent, null);
     }
 
     /**
      * Instantiates a new Retro client service generator.
      *
-     * @param localContext  the local context
-     * @param localIsSilent the local is silent
-     * @param headers       the headers
+     * @param context  context
+     * @param isSilent Flag to make a network call without progress view
+     * @param headers  headers
      */
-    public RetroClientServiceGenerator(Context localContext,
-                                       boolean localIsSilent,
+    public RetroClientServiceGenerator(Context context,
+                                       boolean isSilent,
                                        Map<String, String> headers) {
-        context = localContext;
+        this.context = context;
         this.headers = headers;
-        isSilent = localIsSilent;
+        this.isSilent = isSilent;
         logger = RetroClientServiceInitializer.getInstance().getLogger();
         logCategory = RetroClientServiceInitializer.getInstance().getLogCategoryName();
         isBaseActivity = false;
@@ -96,8 +89,8 @@ public class RetroClientServiceGenerator {
     /**
      * Gets service.
      *
-     * @param <T>          the type parameter
-     * @param serviceClass the service class
+     * @param <T>          Type of the Client to generate
+     * @param serviceClass Class of the client to generate
      * @return the service
      */
     public <T> T getService(Class<T> serviceClass) {
@@ -107,9 +100,9 @@ public class RetroClientServiceGenerator {
     /**
      * Gets service.
      *
-     * @param <T>          the type parameter
-     * @param serviceClass the service class
-     * @param serviceName  the service name
+     * @param <T>          Type of the Client to generate
+     * @param serviceClass Class of the client to generate
+     * @param serviceName  Name of the service in case same type of client is required with different options
      * @return the service
      */
     public <T> T getService(Class<T> serviceClass, String serviceName) {
@@ -118,24 +111,24 @@ public class RetroClientServiceGenerator {
 
     private void logOnLogCat(String message) {
         if (RetroClientServiceInitializer.getInstance().isDebug()) {
-            Helpers.d(RetroClientServiceInitializer.getInstance().getLogCategoryName(), message);
+            Helpers.d(logCategory, message);
         }
     }
 
     private void log(String message) {
-        RetroClientServiceInitializer.getInstance().getLogger().log(message);
+        logger.log(message);
     }
 
     private void log(Exception exception) {
-        RetroClientServiceInitializer.getInstance().getLogger().log(exception);
+        logger.log(exception);
     }
 
     /**
-     * Execute.
+     * Execute the network call
      *
-     * @param <T>      the type parameter
-     * @param call     the call
-     * @param callback the callback
+     * @param <T>      Type of the response data
+     * @param call     Retrofit call object
+     * @param callback Handler for the request
      */
     public <T> void execute(Call<T> call, final RequestHandler<T> callback) {
         boolean isNetAvailable = Helpers.isOnline(context);

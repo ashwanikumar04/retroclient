@@ -5,7 +5,7 @@ import in.ashwanik.retroclient.entities.ErrorData;
 
 
 /**
- * The interface Request handler.
+ * This interface provides methods which are called in case of request completion.
  *
  * @param <T> the type parameter
  */

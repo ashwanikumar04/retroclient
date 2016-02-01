@@ -13,30 +13,30 @@ import okhttp3.Response;
 import retrofit2.Retrofit;
 
 /**
- * The type Service generator.
+ * Service generator.
  */
 public class ServiceGenerator {
 
     private static Map<String, Object> clients = new HashMap<>();
 
     /**
-     * Create service s.
+     * Creates service.
      *
-     * @param <S>          the type parameter
-     * @param serviceClass the service class
-     * @return the s
+     * @param <S>          Type of the service
+     * @param serviceClass Class of the service
+     * @return service to make network call
      */
     public static <S> S createService(Class<S> serviceClass) {
         return createService(serviceClass, null);
     }
 
     /**
-     * Create service s.
+     * Create service.
      *
-     * @param <S>          the type parameter
-     * @param serviceClass the service class
-     * @param headers      the headers
-     * @return the s
+     * @param <S>          Type of the service
+     * @param serviceClass Class of the service
+     * @param headers      Map of headers
+     * @return service to make network call
      */
     public static <S> S createService(Class<S> serviceClass, final Map<String, String> headers) {
         return createService(serviceClass, headers, null);
@@ -45,11 +45,11 @@ public class ServiceGenerator {
     /**
      * Create service s.
      *
-     * @param <S>          the type parameter
-     * @param serviceClass the service class
-     * @param headers      the headers
-     * @param serviceName  the service name
-     * @return the s
+     * @param <S>          Type of the service
+     * @param serviceClass Class of the service
+     * @param headers      Map of headers
+     * @param serviceName  Service name
+     * @return service to make network call
      */
     public static <S> S createService(Class<S> serviceClass, final Map<String, String> headers, String serviceName) {
         String key = serviceName;

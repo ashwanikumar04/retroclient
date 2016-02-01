@@ -24,9 +24,9 @@ public class TransparentProgressDialog extends Dialog {
      */
     public TransparentProgressDialog(Context context, int color) {
         super(context, R.style.TransparentProgressDialog);
-        WindowManager.LayoutParams wlmp = getWindow().getAttributes();
-        wlmp.gravity = Gravity.CENTER_HORIZONTAL;
-        getWindow().setAttributes(wlmp);
+        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+        getWindow().setAttributes(layoutParams);
         setTitle(null);
         setCancelable(false);
         setOnCancelListener(null);

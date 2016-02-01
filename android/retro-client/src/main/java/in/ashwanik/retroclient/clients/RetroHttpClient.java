@@ -10,6 +10,9 @@ import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+/**
+ * This class initializes OkHttp client.
+ */
 public class RetroHttpClient {
     private static RetroHttpClient instance = new RetroHttpClient();
     private OkHttpClient okHttpClient;
@@ -18,10 +21,20 @@ public class RetroHttpClient {
 
     }
 
+    /**
+     * Gets instance.
+     *
+     * @return the instance
+     */
     public static RetroHttpClient getInstance() {
         return instance;
     }
 
+    /**
+     * Initialize.
+     *
+     * @param context the context
+     */
     public void initialize(Context context) {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         if (RetroClientServiceInitializer.getInstance().isDebug()) {
@@ -45,6 +58,11 @@ public class RetroHttpClient {
         getInstance().okHttpClient = httpClient.build();
     }
 
+    /**
+     * Gets ok http client.
+     *
+     * @return the ok http client
+     */
     public OkHttpClient getOkHttpClient() {
         return okHttpClient;
     }

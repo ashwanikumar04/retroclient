@@ -1,27 +1,23 @@
 package in.ashwanik.retroclient;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import in.ashwanik.retroclient.clients.RetroHttpClient;
 import in.ashwanik.retroclient.interfaces.ILogger;
-import retrofit2.CallAdapter;
+import in.ashwanik.retroclient.utils.Helpers;
 import retrofit2.Converter;
 import retrofit2.GsonConverterFactory;
 
 
 /**
- * The type Retro client service initializer.
+ * Retro client service initializer
  */
 public class RetroClientServiceInitializer {
     private static RetroClientServiceInitializer instance = new RetroClientServiceInitializer();
-    /**
-     * The Base url.
-     */
-    String baseUrl;
+    private String baseUrl;
     private Converter.Factory converterFactory;
     private Integer timeOut;
     private Boolean enableRetry;
@@ -111,14 +107,14 @@ public class RetroClientServiceInitializer {
             return new ILogger() {
                 @Override
                 public void log(String message) {
-                    Log.d(getLogCategoryName(), message);
+                    Helpers.d(getLogCategoryName(), message);
                 }
 
                 @Override
                 public void log(Exception exception) {
                     StringWriter errors = new StringWriter();
                     exception.printStackTrace(new PrintWriter(errors));
-                    Log.e(getLogCategoryName(), errors.toString());
+                    Helpers.e(getLogCategoryName(), errors.toString());
                 }
             };
         }

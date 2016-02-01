@@ -4,7 +4,7 @@ package in.ashwanik.retroclient.entities;
 import in.ashwanik.retroclient.utils.Json;
 
 /**
- * The type Error data.
+ * This class provides error messages and other information
  */
 public class ErrorData {
 
@@ -21,10 +21,10 @@ public class ErrorData {
     }
 
     /**
-     * Gets error.
+     * This method gives converted error details
      *
      * @param <T>    type of the error object
-     * @param tClass the t class
+     * @param tClass Class of the error object
      * @return the typed object
      * @throws ClassNotFoundException the class not found exception
      */

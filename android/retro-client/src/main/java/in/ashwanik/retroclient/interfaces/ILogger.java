@@ -1,18 +1,18 @@
 package in.ashwanik.retroclient.interfaces;
 
 /**
- * The interface Logger.
+ * This interface provides methods for logging
  */
 public interface ILogger {
     /**
-     * Log.
+     * Log string message
      *
      * @param message the message
      */
     void log(String message);
 
     /**
-     * Log.
+     * Log exception
      *
      * @param exception the exception
      */
