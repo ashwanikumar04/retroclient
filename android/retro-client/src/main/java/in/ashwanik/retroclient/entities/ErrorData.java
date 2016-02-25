@@ -12,12 +12,40 @@ public class ErrorData {
     private String message;
     private int responseStatus;
     private String errorBody;
+    private String actualException;
+    private ErrorCode errorCode;
 
     private ErrorData(Builder builder) {
         setErrorType(builder.errorType);
         setMessage(builder.message);
         setResponseStatus(builder.responseStatus);
-        errorBody = builder.errorBody;
+        setErrorBody(builder.errorBody);
+        setActualException(builder.actualException);
+        setErrorCode(builder.errorCode);
+    }
+
+    public ErrorCode getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(ErrorCode errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public String getActualException() {
+        return actualException;
+    }
+
+    public void setActualException(String actualException) {
+        this.actualException = actualException;
+    }
+
+    public String getErrorBody() {
+        return errorBody;
+    }
+
+    public void setErrorBody(String errorBody) {
+        this.errorBody = errorBody;
     }
 
     /**
@@ -92,6 +120,8 @@ public class ErrorData {
         private String message;
         private int responseStatus;
         private String errorBody;
+        private String actualException;
+        private ErrorCode errorCode;
 
         /**
          * Instantiates a new Builder.
@@ -140,6 +170,28 @@ public class ErrorData {
          */
         public Builder errorBody(String val) {
             errorBody = val;
+            return this;
+        }
+
+        /**
+         * Sets the {@code actualException} and returns a reference to this Builder so that the methods can be chained together.
+         *
+         * @param val the {@code actualException} to set
+         * @return a reference to this Builder
+         */
+        public Builder actualException(String val) {
+            actualException = val;
+            return this;
+        }
+
+        /**
+         * Sets the {@code errorCode} and returns a reference to this Builder so that the methods can be chained together.
+         *
+         * @param val the {@code errorCode} to set
+         * @return a reference to this Builder
+         */
+        public Builder errorCode(ErrorCode val) {
+            errorCode = val;
             return this;
         }
 

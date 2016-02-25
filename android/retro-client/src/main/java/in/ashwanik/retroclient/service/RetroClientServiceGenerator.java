@@ -6,6 +6,7 @@ import android.content.Context;
 import java.util.Map;
 
 import in.ashwanik.retroclient.RetroClientServiceInitializer;
+import in.ashwanik.retroclient.entities.ErrorCode;
 import in.ashwanik.retroclient.entities.ErrorData;
 import in.ashwanik.retroclient.entities.ErrorType;
 import in.ashwanik.retroclient.interfaces.ILogger;
@@ -123,6 +124,10 @@ public class RetroClientServiceGenerator {
         logger.log(exception);
     }
 
+    public <T> void execute(Call<T> call, final RequestHandler<T> callback) {
+        execute(call, callback, isSilent);
+    }
+
     /**
      * Execute the network call
      *
@@ -130,10 +135,10 @@ public class RetroClientServiceGenerator {
      * @param call     Retrofit call object
      * @param callback Handler for the request
      */
-    public <T> void execute(Call<T> call, final RequestHandler<T> callback) {
+    public <T> void execute(Call<T> call, final RequestHandler<T> callback, boolean isCurrentCallSilent) {
         boolean isNetAvailable = Helpers.isOnline(context);
         if (isNetAvailable) {
-            if (!isSilent) {
+            if (!isCurrentCallSilent && progressViewColor > 0) {
                 progressDialog = new TransparentProgressDialog(context, progressViewColor);
                 progressDialog.setCancelable(false);
                 dismissProgressDialog();
@@ -153,18 +158,18 @@ public class RetroClientServiceGenerator {
                                 callback.onSuccess(response.body());
                             } else {
                                 if (response.errorBody() != null) {
-                                    callback.onError(new ErrorData.Builder().responseStatus(code).errorType(ErrorType.Specific).message("Some error occurred").errorBody(response.errorBody().string()).build());
+                                    callback.onError(new ErrorData.Builder().responseStatus(code).errorType(ErrorType.SPECIFIC).message("Some error occurred").errorBody(response.errorBody().string()).build());
                                 } else {
-                                    callback.onError(new ErrorData.Builder().responseStatus(code).errorType(ErrorType.Generic).message("Some error occurred").build());
+                                    callback.onError(new ErrorData.Builder().responseStatus(code).errorType(ErrorType.GENERIC).message("Some error occurred").build());
                                 }
                             }
                         } else {
-                            callback.onError(new ErrorData.Builder().responseStatus(0).errorType(ErrorType.Generic).message("Some error occurred").build());
+                            callback.onError(new ErrorData.Builder().responseStatus(0).errorType(ErrorType.GENERIC).message("Some error occurred").errorCode(ErrorCode.RESPONSE_NOT_AVAILABLE).build());
                         }
 
                     } catch (Exception exception) {
                         log(exception);
-                        callback.onError(new ErrorData.Builder().responseStatus(0).errorType(ErrorType.Generic).message("Some error occurred").build());
+                        callback.onError(new ErrorData.Builder().responseStatus(0).errorType(ErrorType.GENERIC).message("Some error occurred").build());
                     }
                 }
 
@@ -176,13 +181,13 @@ public class RetroClientServiceGenerator {
                     try {
                         dismissProgressDialog();
                     } finally {
-                        callback.onError(new ErrorData.Builder().responseStatus(0).errorType(ErrorType.Generic).message("Some error occurred").build());
+                        callback.onError(new ErrorData.Builder().responseStatus(0).errorType(ErrorType.GENERIC).message("Some error occurred").actualException(Helpers.exceptionToString(t)).build());
                     }
                 }
             });
         } else {
             logOnLogCat("Network not available");
-            callback.onError(new ErrorData.Builder().responseStatus(0).errorType(isSilent ? ErrorType.DoNotHandle : ErrorType.Specific).message("Please check network connection!!!").build());
+            callback.onError(new ErrorData.Builder().responseStatus(0).errorType(isCurrentCallSilent ? ErrorType.DO_NOT_HANDLE : ErrorType.SPECIFIC).errorCode(ErrorCode.INTERNET_NOT_AVAILABLE).message("Please check network connection!!!").build());
         }
     }
 

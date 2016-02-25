@@ -112,9 +112,7 @@ public class RetroClientServiceInitializer {
 
                 @Override
                 public void log(Exception exception) {
-                    StringWriter errors = new StringWriter();
-                    exception.printStackTrace(new PrintWriter(errors));
-                    Helpers.e(getLogCategoryName(), errors.toString());
+                    Helpers.e(getLogCategoryName(), Helpers.exceptionToString(exception));
                 }
             };
         }

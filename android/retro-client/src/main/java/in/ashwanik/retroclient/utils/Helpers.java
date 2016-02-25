@@ -5,6 +5,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 
 public class Helpers {
 
@@ -51,5 +54,17 @@ public class Helpers {
             end = end > message.length() ? message.length() : end;
             Log.e(TAG, message.substring(start, end));
         }
+    }
+
+    /**
+     * This return exception as string.
+     *
+     * @param throwable Throwable
+     * @return exception string
+     */
+    public static String exceptionToString(Throwable throwable) {
+        StringWriter errors = new StringWriter();
+        throwable.printStackTrace(new PrintWriter(errors));
+        return errors.toString();
     }
 }

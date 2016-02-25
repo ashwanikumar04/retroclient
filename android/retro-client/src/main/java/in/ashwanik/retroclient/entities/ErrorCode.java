@@ -2,24 +2,21 @@ package in.ashwanik.retroclient.entities;
 
 
 /**
- * The enum Error type.
+ * The enum Error Code.
  */
-public enum ErrorType {
+public enum ErrorCode {
     /**
-     * SPECIFIC error type.
+     * Internet not available.
      */
-    SPECIFIC(0),
+    INTERNET_NOT_AVAILABLE(0),
     /**
-     * GENERIC error type.
+     * Response not available.
      */
-    GENERIC(1),
-    /**
-     * Do not handle error type.
-     */
-    DO_NOT_HANDLE(2);
+    RESPONSE_NOT_AVAILABLE(1);
+
     private final int value;
 
-     ErrorType(final int newValue) {
+    ErrorCode(final int newValue) {
         value = newValue;
     }
 
