@@ -29,6 +29,21 @@ public class RetroClientServiceGenerator {
     private Context context;
     private String logCategory;
     private int progressViewColor;
+    private RetroClientServiceInitializer retroClientServiceInitializer = RetroClientServiceInitializer.getInstance();
+
+    private void logOnLogCat(String message) {
+        if (retroClientServiceInitializer.isDebug()) {
+            Helpers.d(logCategory, message);
+        }
+    }
+
+    private void log(String message) {
+        logger.log(message);
+    }
+
+    private void log(Exception exception) {
+        logger.log(exception);
+    }
 
     /**
      * Instantiates a new Retro client service generator.
@@ -52,9 +67,9 @@ public class RetroClientServiceGenerator {
         context = config;
         this.headers = headers;
         this.isSilent = isSilent;
-        this.progressViewColor = RetroClientServiceInitializer.getInstance().getProgressViewColor();
-        logger = RetroClientServiceInitializer.getInstance().getLogger();
-        logCategory = RetroClientServiceInitializer.getInstance().getLogCategoryName();
+        this.progressViewColor = retroClientServiceInitializer.getProgressViewColor();
+        logger = retroClientServiceInitializer.getLogger();
+        logCategory = retroClientServiceInitializer.getLogCategoryName();
         isBaseActivity = true;
     }
 
@@ -82,8 +97,8 @@ public class RetroClientServiceGenerator {
         this.context = context;
         this.headers = headers;
         this.isSilent = isSilent;
-        logger = RetroClientServiceInitializer.getInstance().getLogger();
-        logCategory = RetroClientServiceInitializer.getInstance().getLogCategoryName();
+        logger = retroClientServiceInitializer.getLogger();
+        logCategory = retroClientServiceInitializer.getLogCategoryName();
         isBaseActivity = false;
     }
 
@@ -110,43 +125,40 @@ public class RetroClientServiceGenerator {
         return ServiceGenerator.createService(serviceClass, headers, serviceName);
     }
 
-    private void logOnLogCat(String message) {
-        if (RetroClientServiceInitializer.getInstance().isDebug()) {
-            Helpers.d(logCategory, message);
-        }
-    }
-
-    private void log(String message) {
-        logger.log(message);
-    }
-
-    private void log(Exception exception) {
-        logger.log(exception);
-    }
-
-    public <T> void execute(Call<T> call, final RequestHandler<T> callback) {
-        execute(call, callback, isSilent);
-    }
 
     /**
-     * Execute the network call
+     * Execute the network call.
      *
      * @param <T>      Type of the response data
      * @param call     Retrofit call object
      * @param callback Handler for the request
      */
+    public <T> void execute(Call<T> call, final RequestHandler<T> callback) {
+        execute(call, callback, isSilent);
+    }
+
+    /**
+     * Execute the network call.
+     *
+     * @param <T>                 Type of the response data
+     * @param call                Retrofit call object
+     * @param callback            Handler for the request
+     * @param isCurrentCallSilent makes this call silently
+     */
     public <T> void execute(Call<T> call, final RequestHandler<T> callback, boolean isCurrentCallSilent) {
         boolean isNetAvailable = Helpers.isOnline(context);
         if (isNetAvailable) {
-            if (!isCurrentCallSilent && progressViewColor > 0) {
+            if (!isCurrentCallSilent) {
                 progressDialog = new TransparentProgressDialog(context, progressViewColor);
                 progressDialog.setCancelable(false);
                 dismissProgressDialog();
                 progressDialog.show();
             }
+
+
             call.enqueue(new Callback<T>() {
                 @Override
-                public void onResponse(Response<T> response) {
+                public void onResponse(Call<T> call, Response<T> response) {
                     if (isBaseActivity && ((Activity) context).isFinishing()) {
                         return;
                     }
@@ -154,40 +166,96 @@ public class RetroClientServiceGenerator {
                         dismissProgressDialog();
                         if (response != null) {
                             int code = response.code();
-                            if (response.isSuccess() && code >= 200 && code < 300) {
+                            if (response.isSuccess() && (code >= 200) && (code < 300)) {
                                 callback.onSuccess(response.body());
                             } else {
                                 if (response.errorBody() != null) {
-                                    callback.onError(new ErrorData.Builder().responseStatus(code).errorType(ErrorType.SPECIFIC).message("Some error occurred").errorBody(response.errorBody().string()).build());
+                                    callback.onError(new ErrorData
+                                            .Builder()
+                                            .responseStatus(code)
+                                            .errorType(ErrorType.SPECIFIC)
+                                            .message(retroClientServiceInitializer
+                                                    .getDefaultData()
+                                                    .getGenericErrorMessage())
+                                            .errorBody(response.errorBody()
+                                                    .string())
+                                            .build());
                                 } else {
-                                    callback.onError(new ErrorData.Builder().responseStatus(code).errorType(ErrorType.GENERIC).message("Some error occurred").build());
+                                    callback.onError(new ErrorData
+                                            .Builder()
+                                            .responseStatus(code)
+                                            .errorType(ErrorType.GENERIC)
+                                            .message(retroClientServiceInitializer
+                                                    .getDefaultData()
+                                                    .getGenericErrorMessage())
+                                            .build());
                                 }
                             }
                         } else {
-                            callback.onError(new ErrorData.Builder().responseStatus(0).errorType(ErrorType.GENERIC).message("Some error occurred").errorCode(ErrorCode.RESPONSE_NOT_AVAILABLE).build());
+                            callback.onError(new ErrorData.Builder()
+                                    .responseStatus(retroClientServiceInitializer
+                                            .getDefaultData()
+                                            .getDefaultResponseCode())
+                                    .errorType(ErrorType.GENERIC)
+                                    .message(retroClientServiceInitializer
+                                            .getDefaultData()
+                                            .getGenericErrorMessage())
+                                    .errorCode(ErrorCode.RESPONSE_NOT_AVAILABLE)
+                                    .build());
                         }
 
                     } catch (Exception exception) {
                         log(exception);
-                        callback.onError(new ErrorData.Builder().responseStatus(0).errorType(ErrorType.GENERIC).message("Some error occurred").build());
+                        callback.onError(new ErrorData
+                                .Builder()
+                                .responseStatus(retroClientServiceInitializer
+                                        .getDefaultData()
+                                        .getDefaultResponseCode())
+                                .errorType(ErrorType.GENERIC)
+                                .message(retroClientServiceInitializer
+                                        .getDefaultData()
+                                        .getGenericErrorMessage())
+                                .build());
                     }
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(Call<T> call, Throwable t) {
                     if (isBaseActivity && ((Activity) context).isFinishing()) {
                         return;
                     }
                     try {
                         dismissProgressDialog();
                     } finally {
-                        callback.onError(new ErrorData.Builder().responseStatus(0).errorType(ErrorType.GENERIC).message("Some error occurred").actualException(Helpers.exceptionToString(t)).build());
+                        callback.onError(new ErrorData
+                                .Builder()
+                                .responseStatus(retroClientServiceInitializer
+                                        .getDefaultData()
+                                        .getDefaultResponseCode())
+                                .errorType(ErrorType.GENERIC)
+                                .message(retroClientServiceInitializer
+                                        .getDefaultData()
+                                        .getGenericErrorMessage())
+                                .actualException(Helpers.exceptionToString(t))
+                                .build());
                     }
                 }
             });
         } else {
             logOnLogCat("Network not available");
-            callback.onError(new ErrorData.Builder().responseStatus(0).errorType(isCurrentCallSilent ? ErrorType.DO_NOT_HANDLE : ErrorType.SPECIFIC).errorCode(ErrorCode.INTERNET_NOT_AVAILABLE).message("Please check network connection!!!").build());
+            callback.onError(new ErrorData
+                    .Builder()
+                    .responseStatus(retroClientServiceInitializer
+                            .getDefaultData()
+                            .getDefaultResponseCode())
+                    .errorType(isCurrentCallSilent
+                            ? ErrorType.DO_NOT_HANDLE
+                            : ErrorType.SPECIFIC)
+                    .errorCode(ErrorCode.INTERNET_NOT_AVAILABLE)
+                    .message(retroClientServiceInitializer
+                            .getDefaultData()
+                            .getNoInternetErrorMessage())
+                    .build());
         }
     }
 

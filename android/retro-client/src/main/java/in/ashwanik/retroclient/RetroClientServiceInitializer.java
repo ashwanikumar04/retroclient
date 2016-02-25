@@ -2,14 +2,14 @@ package in.ashwanik.retroclient;
 
 import android.content.Context;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.File;
 
 import in.ashwanik.retroclient.clients.RetroHttpClient;
+import in.ashwanik.retroclient.entities.DefaultData;
 import in.ashwanik.retroclient.interfaces.ILogger;
 import in.ashwanik.retroclient.utils.Helpers;
 import retrofit2.Converter;
-import retrofit2.GsonConverterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 /**
@@ -19,13 +19,15 @@ public class RetroClientServiceInitializer {
     private static RetroClientServiceInitializer instance = new RetroClientServiceInitializer();
     private String baseUrl;
     private Converter.Factory converterFactory;
-    private Integer timeOut;
-    private Boolean enableRetry;
-    private Boolean isDebug;
+    private int timeOut;
+    private boolean enableRetry;
+    private boolean isDebug;
     private String logCategoryName;
     private int progressViewColor;
     private ILogger logger;
-    private String cacheDirectory;
+    private File cacheDirectory;
+    private DefaultData defaultData;
+    private int cacheSize;
 
     private RetroClientServiceInitializer() {
 
@@ -40,23 +42,23 @@ public class RetroClientServiceInitializer {
         return instance;
     }
 
+    public DefaultData getDefaultData() {
+        return defaultData;
+    }
+
+    public void setDefaultData(DefaultData defaultData) {
+        this.defaultData = defaultData;
+    }
+
     /**
      * Gets cache directory.
      *
      * @return the cache directory
      */
-    public String getCacheDirectory() {
+    public File getCacheDirectory() {
         return cacheDirectory;
     }
 
-    /**
-     * Sets cache directory.
-     *
-     * @param cacheDirectory the cache directory
-     */
-    public void setCacheDirectory(String cacheDirectory) {
-        this.cacheDirectory = cacheDirectory;
-    }
 
     /**
      * Gets log category name.
@@ -64,9 +66,6 @@ public class RetroClientServiceInitializer {
      * @return the log category name
      */
     public String getLogCategoryName() {
-        if (logCategoryName == null || logCategoryName.isEmpty()) {
-            logCategoryName = "Retro-Client";
-        }
         return logCategoryName;
     }
 
@@ -89,33 +88,11 @@ public class RetroClientServiceInitializer {
     }
 
     /**
-     * Sets progress view color.
-     *
-     * @param progressViewColor the progress view color
-     */
-    public void setProgressViewColor(int progressViewColor) {
-        this.progressViewColor = progressViewColor;
-    }
-
-    /**
      * Gets logger.
      *
      * @return the logger
      */
     public ILogger getLogger() {
-        if (logger == null) {
-            return new ILogger() {
-                @Override
-                public void log(String message) {
-                    Helpers.d(getLogCategoryName(), message);
-                }
-
-                @Override
-                public void log(Exception exception) {
-                    Helpers.e(getLogCategoryName(), Helpers.exceptionToString(exception));
-                }
-            };
-        }
         return logger;
     }
 
@@ -133,20 +110,8 @@ public class RetroClientServiceInitializer {
      *
      * @return the boolean
      */
-    public Boolean isDebug() {
-        if (isDebug == null) {
-            isDebug = false;
-        }
+    public boolean isDebug() {
         return isDebug;
-    }
-
-    /**
-     * Sets debug.
-     *
-     * @param isDebug the is debug
-     */
-    public void setDebug(Boolean isDebug) {
-        this.isDebug = isDebug;
     }
 
     /**
@@ -154,10 +119,7 @@ public class RetroClientServiceInitializer {
      *
      * @return the time out
      */
-    public Integer getTimeOut() {
-        if (timeOut == null) {
-            timeOut = 30;
-        }
+    public int getTimeOut() {
         return timeOut;
     }
 
@@ -176,9 +138,6 @@ public class RetroClientServiceInitializer {
      * @return the enable retry
      */
     public Boolean getEnableRetry() {
-        if (enableRetry == null) {
-            enableRetry = true;
-        }
         return enableRetry;
     }
 
@@ -204,19 +163,83 @@ public class RetroClientServiceInitializer {
         return baseUrl;
     }
 
+    private void initialize() {
+        defaultData = new DefaultData.Builder()
+                .defaultResponseCode(0)
+                .genericErrorMessage("Some error occurred.")
+                .noInternetErrorMessage("Please check network connection.")
+                .build();
+        logCategoryName = "Retro-Client";
+        enableRetry = true;
+        timeOut = 30;
+        converterFactory = GsonConverterFactory.create();
+        logger = new ILogger() {
+            @Override
+            public void log(String message) {
+                Helpers.d(getLogCategoryName(), message);
+            }
+
+            @Override
+            public void log(Exception exception) {
+                Helpers.e(getLogCategoryName(), Helpers.exceptionToString(exception));
+            }
+        };
+    }
+
     /**
      * Initialize.
      *
      * @param baseUrl           the base url
      * @param context           the context
      * @param progressViewColor the progress view color
-     * @param isDebug           the is debug
+     */
+    public void initialize(String baseUrl, Context context, int progressViewColor) {
+        initialize(baseUrl, context, progressViewColor, false);
+    }
+
+
+    /**
+     * Initialize.
+     *
+     * @param baseUrl           the base url
+     * @param context           the context
+     * @param progressViewColor the progress view color
+     * @param isDebug           is debug
      */
     public void initialize(String baseUrl, Context context, int progressViewColor, boolean isDebug) {
+        initialize(baseUrl, context, progressViewColor, isDebug, 10 * 1024 * 1024);
+    }
+
+    /**
+     * Initialize.
+     *
+     * @param baseUrl           the base url
+     * @param context           the context
+     * @param progressViewColor the progress view color
+     * @param isDebug           is debug
+     * @param cacheSize         cache size
+     */
+    public void initialize(String baseUrl, Context context, int progressViewColor, boolean isDebug, int cacheSize) {
+        initialize(baseUrl, progressViewColor, isDebug, cacheSize, context.getCacheDir());
+    }
+
+    /**
+     * Initialize.
+     *
+     * @param baseUrl           the base url
+     * @param progressViewColor the progress view color
+     * @param isDebug           is debug
+     * @param cacheSize         cache size
+     * @param cacheDirectory    cache directory
+     */
+    public void initialize(String baseUrl, int progressViewColor, boolean isDebug, int cacheSize, File cacheDirectory) {
         this.baseUrl = baseUrl;
-        this.setDebug(isDebug);
-        RetroHttpClient.getInstance().initialize(context);
+        this.cacheSize = cacheSize;
+        this.isDebug = isDebug;
+        this.cacheDirectory = cacheDirectory;
         this.progressViewColor = progressViewColor;
+        initialize();
+        RetroHttpClient.getInstance().initialize();
     }
 
 
@@ -226,9 +249,6 @@ public class RetroClientServiceInitializer {
      * @return the converter factory
      */
     public Converter.Factory getConverterFactory() {
-        if (converterFactory == null) {
-            converterFactory = GsonConverterFactory.create();
-        }
         return converterFactory;
     }
 
@@ -239,5 +259,14 @@ public class RetroClientServiceInitializer {
      */
     public void setConverterFactory(Converter.Factory converterFactory) {
         this.converterFactory = converterFactory;
+    }
+
+    /**
+     * Get cache size.
+     *
+     * @return Cache size
+     */
+    public int getCacheSize() {
+        return cacheSize;
     }
 }

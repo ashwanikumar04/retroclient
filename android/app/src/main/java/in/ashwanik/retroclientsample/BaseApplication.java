@@ -18,7 +18,8 @@ public class BaseApplication extends Application {
         } else {
             progressViewColor = getResources().getColor(R.color.colorPrimary);
         }
-        RetroClientServiceInitializer.getInstance().initialize(ApiUrls.BASE_API_URL, getApplicationContext(), progressViewColor, true);
+        RetroClientServiceInitializer.getInstance()
+                .initialize(ApiUrls.BASE_API_URL, getApplicationContext(), progressViewColor, true);
         RetroClientServiceInitializer.getInstance().setLogCategoryName("Retro-Client-Sample");
 
     }

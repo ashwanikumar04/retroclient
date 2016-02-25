@@ -1,7 +1,5 @@
 package in.ashwanik.retroclient.clients;
 
-import android.content.Context;
-
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
@@ -32,10 +30,9 @@ public class RetroHttpClient {
 
     /**
      * Initialize.
-     *
-     * @param context the context
      */
-    public void initialize(Context context) {
+    public void initialize() {
+        RetroClientServiceInitializer retroClientServiceInitializer = RetroClientServiceInitializer.getInstance();
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         if (RetroClientServiceInitializer.getInstance().isDebug()) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -43,18 +40,17 @@ public class RetroHttpClient {
             httpClient.addInterceptor(logging);
         }
         try {
-            File httpCacheDirectory = new File(context.getCacheDir(), "retro-client-cache");
-            int cacheSize = 10 * 1024 * 1024; // 10 MiB
-            Cache cache = new Cache(httpCacheDirectory, cacheSize);
+            File httpCacheDirectory = new File(retroClientServiceInitializer.getCacheDirectory(), "retro-client-cache");
+            Cache cache = new Cache(httpCacheDirectory, retroClientServiceInitializer.getCacheSize());
             httpClient.cache(cache);
         } catch (Exception exception) {
-            RetroClientServiceInitializer.getInstance().getLogger().log(exception);
+            retroClientServiceInitializer.getLogger().log(exception);
         }
-        int timeOut = RetroClientServiceInitializer.getInstance().getTimeOut();
+        int timeOut = retroClientServiceInitializer.getTimeOut();
         httpClient.connectTimeout(timeOut, TimeUnit.SECONDS);
         httpClient.readTimeout(timeOut, TimeUnit.SECONDS);
         httpClient.writeTimeout(timeOut, TimeUnit.SECONDS);
-        httpClient.retryOnConnectionFailure(RetroClientServiceInitializer.getInstance().getEnableRetry());
+        httpClient.retryOnConnectionFailure(retroClientServiceInitializer.getEnableRetry());
         getInstance().okHttpClient = httpClient.build();
     }
 
