@@ -11,7 +11,7 @@ Basic features:
 
 ```
 
-   compile 'in.ashwanik:retro-client:0.1.0'
+   compile 'in.ashwanik:retro-client:0.1.1'
    
 ```
 
@@ -86,6 +86,13 @@ RetroClientServiceGenerator serviceGenerator = new RetroClientServiceGenerator(M
 #### Sample rest API using Node.js is available [here](https://github.com/ashwanikumar04/retroclient/tree/master/api)
 
 ## History
+- Released 0.1.1 version
+    * Updated Retrofit version
+    * Added support for changing default messages
+    * Added support for changing cache directory
+    * Added support for changing cache directory size
+    * Code refactoring 
+    
 - Released 0.1.0 version
 
 
