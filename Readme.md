@@ -11,7 +11,7 @@ Basic features:
 
 ```
 
-   compile 'in.ashwanik:retro-client:0.1.1'
+   compile 'in.ashwanik:retro-client:0.1.2'
    
 ```
 
@@ -19,13 +19,30 @@ Basic features:
 Initialize *RetroClient* using **RetroClientServiceInitializer** in an activity or Application class
 
 ```
-
  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             progressViewColor = getResources().getColor(R.color.colorPrimary, null);
         } else {
             progressViewColor = getResources().getColor(R.color.colorPrimary);
         }
         RetroClientServiceInitializer.getInstance().initialize(ApiUrls.BASE_API_URL, getApplicationContext(), progressViewColor, true);
+        RetroClientServiceInitializer.getInstance().setLogCategoryName("Retro-Client-Sample");
+
+```
+### Add interceptor
+
+```
+  List<Interceptor> interceptors = new ArrayList<>();
+        interceptors.add(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request request = chain.request();
+                Response response = chain.proceed(request);
+                Helpers.d(RetroClientServiceInitializer.getInstance().getLogCategoryName(), response.code() + "");
+                return response;
+            }
+        });
+        RetroClientServiceInitializer.getInstance()
+                .initialize(ApiUrls.BASE_API_URL, progressViewColor, true, 10 * 1024 * 1024, getCacheDir(), interceptors, null);
         RetroClientServiceInitializer.getInstance().setLogCategoryName("Retro-Client-Sample");
 
 ```
@@ -81,11 +98,18 @@ RetroClientServiceGenerator serviceGenerator = new RetroClientServiceGenerator(M
 * **logCategoryName**: Log category 
 * **progressViewColor**: Specify the color of progress view 
 * **logger**: Logger used for logging exception etc to external services like Crashlytics.
+* **cacheDirectory**: Pass location of cache directory.
+* **cacheSize**: Size of cache.
+
 
 #### Sample app is available [here](https://github.com/ashwanikumar04/retroclient/tree/master/android)
 #### Sample rest API using Node.js is available [here](https://github.com/ashwanikumar04/retroclient/tree/master/api)
 
 ## History
+- Released 0.1.2 version
+    * Updated Retrofit version
+    * Fixed issues
+    * Added support for adding network and application level interceptors
 - Released 0.1.1 version
     * Updated Retrofit version
     * Added support for changing default messages

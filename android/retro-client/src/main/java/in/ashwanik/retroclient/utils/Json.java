@@ -2,6 +2,8 @@ package in.ashwanik.retroclient.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -34,6 +36,9 @@ public class Json {
      * @throws ClassNotFoundException the class not found exception
      */
     public static <T> T deSerialize(String jsonString, Class<T> tClass) throws ClassNotFoundException {
+        if (!isValid(jsonString)) {
+            return null;
+        }
         Gson gson = new GsonBuilder().create();
         return gson.fromJson(jsonString, tClass);
     }
@@ -47,7 +52,25 @@ public class Json {
      * @return List of converted object
      */
     public static <T> List<T> deSerializeList(String data, Type type) {
+        if (!isValid(data)) {
+            return null;
+        }
         return new Gson().fromJson(data, type);
+    }
+
+    /**
+     * Check if a string is valid json.
+     *
+     * @param json Json String
+     * @return Flag indicating if string is json
+     */
+    public static boolean isValid(String json) {
+        try {
+            new JsonParser().parse(json);
+            return true;
+        } catch (JsonSyntaxException jse) {
+            return false;
+        }
     }
 
 }

@@ -48,6 +48,7 @@ public class ErrorData {
         this.errorBody = errorBody;
     }
 
+
     /**
      * This method gives converted error details
      *
@@ -57,7 +58,7 @@ public class ErrorData {
      * @throws ClassNotFoundException the class not found exception
      */
     public <T> T getError(Class<T> tClass) throws ClassNotFoundException {
-        if (errorBody == null || errorBody.isEmpty()) {
+        if (errorBody == null || errorBody.isEmpty() || !Json.isValid(errorBody)) {
             return null;
         }
         return Json.deSerialize(errorBody, tClass);

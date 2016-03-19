@@ -166,7 +166,7 @@ public class RetroClientServiceGenerator {
                         dismissProgressDialog();
                         if (response != null) {
                             int code = response.code();
-                            if (response.isSuccess() && (code >= 200) && (code < 300)) {
+                            if (response.isSuccessful() && (code >= 200) && (code < 300)) {
                                 callback.onSuccess(response.body());
                             } else {
                                 if (response.errorBody() != null) {

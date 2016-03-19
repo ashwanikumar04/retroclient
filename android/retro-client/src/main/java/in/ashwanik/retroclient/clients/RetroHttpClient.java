@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import in.ashwanik.retroclient.RetroClientServiceInitializer;
 import okhttp3.Cache;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -38,6 +39,16 @@ public class RetroHttpClient {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
             httpClient.addInterceptor(logging);
+        }
+        for (Interceptor interceptor : RetroClientServiceInitializer
+                .getInstance()
+                .getNetworkInterceptors()) {
+            httpClient.addNetworkInterceptor(interceptor);
+        }
+        for (Interceptor interceptor : RetroClientServiceInitializer
+                .getInstance()
+                .getApplicationInterceptors()) {
+            httpClient.addInterceptor(interceptor);
         }
         try {
             File httpCacheDirectory = new File(retroClientServiceInitializer.getCacheDirectory(), "retro-client-cache");

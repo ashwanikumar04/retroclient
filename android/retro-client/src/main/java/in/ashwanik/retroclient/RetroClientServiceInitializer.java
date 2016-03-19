@@ -3,11 +3,14 @@ package in.ashwanik.retroclient;
 import android.content.Context;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import in.ashwanik.retroclient.clients.RetroHttpClient;
 import in.ashwanik.retroclient.entities.DefaultData;
 import in.ashwanik.retroclient.interfaces.ILogger;
 import in.ashwanik.retroclient.utils.Helpers;
+import okhttp3.Interceptor;
 import retrofit2.Converter;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -28,6 +31,8 @@ public class RetroClientServiceInitializer {
     private File cacheDirectory;
     private DefaultData defaultData;
     private int cacheSize;
+    private List<Interceptor> networkInterceptors;
+    private List<Interceptor> applicationInterceptors;
 
     private RetroClientServiceInitializer() {
 
@@ -40,6 +45,42 @@ public class RetroClientServiceInitializer {
      */
     public static RetroClientServiceInitializer getInstance() {
         return instance;
+    }
+
+    /**
+     * Gets the list of network interceptors.
+     *
+     * @return List of Interceptor
+     */
+    public List<Interceptor> getNetworkInterceptors() {
+        return networkInterceptors;
+    }
+
+    /**
+     * Add network interceptor.
+     *
+     * @param networkInterceptor Network interceptor
+     */
+    private void addNetworkInterceptor(Interceptor networkInterceptor) {
+        this.networkInterceptors.add(networkInterceptor);
+    }
+
+    /**
+     * Gets the list of application interceptors.
+     *
+     * @return List of Interceptor
+     */
+    public List<Interceptor> getApplicationInterceptors() {
+        return applicationInterceptors;
+    }
+
+    /**
+     * Add application interceptor.
+     *
+     * @param applicationInterceptor Application interceptor
+     */
+    private void addApplicationInterceptor(Interceptor applicationInterceptor) {
+        this.applicationInterceptors.add(applicationInterceptor);
     }
 
     public DefaultData getDefaultData() {
@@ -163,7 +204,10 @@ public class RetroClientServiceInitializer {
         return baseUrl;
     }
 
-    private void initialize() {
+    private void initialize(List<Interceptor> localNetworkInterceptors, List<Interceptor> localApplicationInterceptors) {
+        this.networkInterceptors = new ArrayList<>();
+        this.applicationInterceptors = new ArrayList<>();
+
         defaultData = new DefaultData.Builder()
                 .defaultResponseCode(0)
                 .genericErrorMessage("Some error occurred.")
@@ -184,6 +228,17 @@ public class RetroClientServiceInitializer {
                 Helpers.e(getLogCategoryName(), Helpers.exceptionToString(exception));
             }
         };
+        if (localNetworkInterceptors != null) {
+            for (Interceptor interceptor : localNetworkInterceptors) {
+                addNetworkInterceptor(interceptor);
+            }
+        }
+        if (localApplicationInterceptors != null) {
+            for (Interceptor interceptor : localApplicationInterceptors) {
+                addApplicationInterceptor(interceptor);
+            }
+        }
+
     }
 
     /**
@@ -233,12 +288,25 @@ public class RetroClientServiceInitializer {
      * @param cacheDirectory    cache directory
      */
     public void initialize(String baseUrl, int progressViewColor, boolean isDebug, int cacheSize, File cacheDirectory) {
+        initialize(baseUrl, progressViewColor, isDebug, cacheSize, cacheDirectory, new ArrayList<Interceptor>(), new ArrayList<Interceptor>());
+    }
+
+    /**
+     * Initialize.
+     *
+     * @param baseUrl           the base url
+     * @param progressViewColor the progress view color
+     * @param isDebug           is debug
+     * @param cacheSize         cache size
+     * @param cacheDirectory    cache directory
+     */
+    public void initialize(String baseUrl, int progressViewColor, boolean isDebug, int cacheSize, File cacheDirectory, List<Interceptor> networkInterceptors, List<Interceptor> applicationInterceptors) {
         this.baseUrl = baseUrl;
         this.cacheSize = cacheSize;
         this.isDebug = isDebug;
         this.cacheDirectory = cacheDirectory;
         this.progressViewColor = progressViewColor;
-        initialize();
+        initialize(networkInterceptors, applicationInterceptors);
         RetroHttpClient.getInstance().initialize();
     }
 
