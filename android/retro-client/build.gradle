@@ -12,7 +12,7 @@ ext {
     siteUrl = 'https://github.com/ashwanikumar04/retroclient'
     gitUrl = 'https://github.com/ashwanikumar04/retroclient.git'
 
-    libraryVersion = '0.1.1'
+    libraryVersion = '0.1.2'
 
     developerId = 'ashwanikumar04'
     developerName = 'Ashwani Kumar'
@@ -47,8 +47,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.squareup.retrofit2:retrofit:2.0.0'
     compile 'com.squareup.retrofit2:converter-gson:2.0.0'
-    compile 'com.squareup.okhttp3:okhttp:3.1.2'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.1.2'
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.2.0'
 
 }
 
